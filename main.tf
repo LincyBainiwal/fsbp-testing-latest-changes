@@ -5,6 +5,18 @@
 # ---------------------------------------------------------------------------
 # Tier 1 — Foundation (no cross-module inputs)
 # ---------------------------------------------------------------------------
+terraform {
+  required_version = ">= 1.15.0"
+
+  cloud {
+    
+    organization = "nagateja-test-org"
+
+    workspaces {
+      name = "fsbp-testing-latest-changes"
+    }
+  }
+}
 
 module "kms" {
   source = "./modules/kms"
