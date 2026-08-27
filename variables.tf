@@ -1,3 +1,9 @@
+variable "aws_region" {
+  description = "AWS region for all resources."
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "create_failing_resources" {
   description = "When true (default), failing resources are created with intentional violations so detection policies fire. Set to false to verify policies produce no false positives."
   type        = bool
