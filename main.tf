@@ -234,16 +234,16 @@ module "s3" {
 #   kms_key_arn              = module.kms.shared_key_arn
 # }
 
-module "dynamo_db" {
-  source = "./modules/dynamo-db"
+# module "dynamo_db" {
+#   source = "./modules/dynamo-db"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = var.kms_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = var.kms_key_arn
+# }
 
 # module "kinesis" {
 #   source = "./modules/kinesis"
