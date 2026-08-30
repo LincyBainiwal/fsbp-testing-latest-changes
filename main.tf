@@ -25,12 +25,38 @@ terraform {
   }
 }
 
-module "kms" {
-  source = "./modules/kms"
+# ---------------------------------------------------------------------------
+# Networking — VPC + private subnets required by the DynamoDB/DAX module
+# ---------------------------------------------------------------------------
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = merge(var.tags, {
+    Name = "regression-test-vpc"
+  })
 }
+
+resource "aws_subnet" "private" {
+  count = length(var.availability_zones)
+
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = merge(var.tags, {
+    Name = "regression-test-private-${count.index + 1}"
+  })
+}
+
+# module "kms" {
+#   source = "./modules/kms"
+
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
 # module "iam" {
 #   source = "./modules/iam"
@@ -208,16 +234,16 @@ module "kms" {
 #   kms_key_arn              = module.kms.shared_key_arn
 # }
 
-# module "dynamo_db" {
-#   source = "./modules/dynamo-db"
+module "dynamo_db" {
+  source = "./modules/dynamo-db"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = var.kms_key_arn
+}
 
 # module "kinesis" {
 #   source = "./modules/kinesis"
