@@ -210,7 +210,7 @@ resource "aws_s3_bucket" "app_data_fail" {
   tags = merge(var.tags, {
     Name            = "app-data-fail"
     compliance_test = "intentional_violation"
-    controls        = "S3.1,S3.2,S3.3,S3.5,S3.9,S3.13,CIS-2.1.1,CIS-2.1.2,CIS-2.1.4"
+    controls        = "S3.1 S3.2 S3.3 S3.5 S3.9 S3.13 CIS-2.1.1 CIS-2.1.2 CIS-2.1.4"
   })
 }
 
@@ -337,7 +337,7 @@ resource "aws_s3_bucket_public_access_block" "cross_account_fail" {
   bucket = aws_s3_bucket.cross_account_fail[0].id
 
   block_public_acls       = true
-  block_public_policy     = true
+  block_public_policy     = false # intentional — allows attaching public-style policy for S3.6 violation test
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
