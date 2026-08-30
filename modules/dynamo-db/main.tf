@@ -92,7 +92,7 @@ resource "aws_dynamodb_table" "pass" {
   name         = "regression-test-pass"
   billing_mode = "PAY_PER_REQUEST"
 
-  deletion_protection_enabled = true
+  deletion_protection_enabled = false
 
   hash_key = "pk"
 
@@ -134,7 +134,7 @@ resource "aws_dynamodb_table" "pitr_fail" {
   name         = "regression-test-pitr-fail"
   billing_mode = "PAY_PER_REQUEST"
 
-  deletion_protection_enabled = true
+  deletion_protection_enabled = false
 
   hash_key = "pk"
 
@@ -180,7 +180,7 @@ resource "aws_dynamodb_table" "capacity_fail" {
   read_capacity  = 5
   write_capacity = 5
 
-  deletion_protection_enabled = true
+  deletion_protection_enabled = false
 
   hash_key = "pk"
 
