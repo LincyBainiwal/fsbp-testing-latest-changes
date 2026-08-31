@@ -341,12 +341,12 @@ resource "aws_subnet" "public" {
 # S3 — provides logs_bucket_id for ELB access logs
 # ---------------------------------------------------------------------------
 
-module "s3" {
-  source = "./modules/s3"
+# module "s3" {
+#   source = "./modules/s3"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
 # # ---------------------------------------------------------------------------
 # # ELB
@@ -481,15 +481,15 @@ module "s3" {
 #   kms_key_arn              = module.kms.shared_key_arn
 # }
 
-module "kinesis" {
-  source = "./modules/kinesis"
+# module "kinesis" {
+#   source = "./modules/kinesis"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  kms_key_arn              = module.kms.shared_key_arn
-  logs_bucket_id           = module.s3.logs_bucket_id
-  logs_bucket_arn          = module.s3.logs_bucket_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   kms_key_arn              = module.kms.shared_key_arn
+#   logs_bucket_id           = module.s3.logs_bucket_id
+#   logs_bucket_arn          = module.s3.logs_bucket_arn
+# }
 
 # module "opensearch" {
 #   source = "./modules/opensearch"
@@ -797,45 +797,45 @@ module "kinesis" {
 # # Specialist / global services
 # # ---------------------------------------------------------------------------
 
-# module "acm" {
-#   source = "./modules/acm"
+module "acm" {
+  source = "./modules/acm"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
 
-# module "route53" {
-#   source = "./modules/route53"
+module "route53" {
+  source = "./modules/route53"
 
-#   providers = {
-#     aws           = aws
-#     aws.us_east_1 = aws.us_east_1
-#   }
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
 
-# module "ssm" {
-#   source = "./modules/ssm"
+module "ssm" {
+  source = "./modules/ssm"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
 
-# module "servicecatalog" {
-#   source = "./modules/servicecatalog"
+module "servicecatalog" {
+  source = "./modules/servicecatalog"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
 
-# module "workspaces" {
-#   source = "./modules/workspaces"
+module "workspaces" {
+  source = "./modules/workspaces"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  kms_key_arn              = module.kms.shared_key_arn
+}
