@@ -26,7 +26,7 @@ resource_policy "aws_iam_role_policy" "kms_restrict_decrypt_actions" {
       for stmt in local.statements : stmt
       if core::try(stmt.Effect, "") == "Allow" &&
          core::length([
-           for action in core::try(stmt.Action, []) : action
+           for action in core::try(core::flatten([stmt.Action]), []) : action
            if action == "kms:Decrypt" || action == "kms:ReEncryptFrom"
          ]) > 0 &&
          (core::try(stmt.Resource, "") == "*" || core::try(core::contains(stmt.Resource, "*"), false))
@@ -49,7 +49,7 @@ resource_policy "aws_iam_user_policy" "kms_restrict_decrypt_actions" {
       for stmt in local.statements : stmt
       if core::try(stmt.Effect, "") == "Allow" &&
          core::length([
-           for action in core::try(stmt.Action, []) : action
+           for action in core::try(core::flatten([stmt.Action]), []) : action
            if action == "kms:Decrypt" || action == "kms:ReEncryptFrom"
          ]) > 0 &&
          (core::try(stmt.Resource, "") == "*" || core::try(core::contains(stmt.Resource, "*"), false))
@@ -72,7 +72,7 @@ resource_policy "aws_iam_group_policy" "kms_restrict_decrypt_actions" {
       for stmt in local.statements : stmt
       if core::try(stmt.Effect, "") == "Allow" &&
          core::length([
-           for action in core::try(stmt.Action, []) : action
+           for action in core::try(core::flatten([stmt.Action]), []) : action
            if action == "kms:Decrypt" || action == "kms:ReEncryptFrom"
          ]) > 0 &&
          (core::try(stmt.Resource, "") == "*" || core::try(core::contains(stmt.Resource, "*"), false))

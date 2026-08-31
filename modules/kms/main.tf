@@ -77,7 +77,7 @@ resource "aws_kms_key" "fail" {
   tags = merge(var.tags, {
     Name            = "regression-test-fail"
     compliance_test = "intentional_violation"
-    controls        = "KMS.3,CIS-3.6"
+    controls        = "KMS.3 CIS-3.6"
   })
 }
 
@@ -173,7 +173,7 @@ resource "aws_iam_role" "kms_user_fail" {
 
   tags = merge(var.tags, {
     compliance_test = "intentional_violation"
-    controls        = "KMS.1,KMS.2"
+    controls        = "KMS.1 KMS.2"
   })
 }
 

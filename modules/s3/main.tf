@@ -365,7 +365,10 @@ resource "aws_s3_bucket_policy" "cross_account_fail" {
   bucket = aws_s3_bucket.cross_account_fail[0].id
   policy = data.aws_iam_policy_document.cross_account_fail.json
 
-  depends_on = [aws_s3_bucket_public_access_block.cross_account_fail]
+  depends_on = [
+    aws_s3_bucket_public_access_block.cross_account_fail,
+    aws_s3_account_public_access_block.main,
+  ]
 }
 
 # ---------------------------------------------------------------------------

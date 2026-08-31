@@ -8,15 +8,8 @@
 terraform {
   required_version = ">= 1.15.0"
 
-  # required_providers {
-  #   aws = {
-  #     source  = "hashicorp/aws"
-  #     version = "~> 5.0"
-  #   }
-  # }
-
   cloud {
-    
+
     organization = "nagateja-test-org"
 
     workspaces {
@@ -26,7 +19,7 @@ terraform {
 }
 
 # ---------------------------------------------------------------------------
-# Networking — VPC + private subnets required by the DynamoDB/DAX module
+# Networking — VPC + private + public subnets required by EC2/DAX modules
 # ---------------------------------------------------------------------------
 
 # resource "aws_vpc" "main" {
@@ -51,52 +44,74 @@ terraform {
 #   })
 # }
 
-# module "kms" {
-#   source = "./modules/kms"
+# resource "aws_subnet" "public" {
+#   count = length(var.availability_zones)
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
+#   vpc_id                  = aws_vpc.main.id
+#   cidr_block              = var.public_subnet_cidrs[count.index]
+#   availability_zone       = var.availability_zones[count.index]
+#   map_public_ip_on_launch = false
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-public-${count.index + 1}"
+#   })
 # }
 
-# module "iam" {
-#   source = "./modules/iam"
+# ---------------------------------------------------------------------------
+# IAM — EC2 instance profile (inline; no separate IAM module needed)
+# ---------------------------------------------------------------------------
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
+# data "aws_iam_policy_document" "ec2_assume_role" {
+#   statement {
+#     effect  = "Allow"
+#     actions = ["sts:AssumeRole"]
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ec2.amazonaws.com"]
+#     }
+#   }
 # }
 
-module "s3" {
-  source = "./modules/s3"
+# resource "aws_iam_role" "ec2_instance_role" {
+#   name               = "regression-test-ec2-instance-role"
+#   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-ec2-instance-role"
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+#   role       = aws_iam_role.ec2_instance_role.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+# }
+
+# resource "aws_iam_instance_profile" "ec2" {
+#   name = "regression-test-ec2-instance-profile"
+#   role = aws_iam_role.ec2_instance_role.name
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-ec2-instance-profile"
+#   })
+# }
+
+# ---------------------------------------------------------------------------
+# KMS — shared CMK (required by IAM + Lambda)
+# ---------------------------------------------------------------------------
+
+module "kms" {
+  source = "./modules/kms"
 
   create_failing_resources = var.create_failing_resources
   tags                     = var.tags
 }
 
-# # ---------------------------------------------------------------------------
-# # Tier 2 — Core compute/network (depend on kms + iam)
-# # ---------------------------------------------------------------------------
-
-# module "ec2" {
-#   source = "./modules/ec2"
-
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   public_subnet_ids        = aws_subnet.public[*].id
-#   availability_zones       = var.availability_zones
-#   instance_profile_name    = module.iam.ec2_instance_profile_name
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
-
-# module "cloudtrail" {
-#   source = "./modules/cloudtrail"
-
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   kms_key_arn              = module.kms.shared_key_arn
-#   cloudwatch_role_arn      = module.iam.cloudtrail_cloudwatch_role_arn
-# }
+# ---------------------------------------------------------------------------
+# Networking — VPC + private subnets (required by RDS)
+# ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# RDS
+# ---------------------------------------------------------------------------
 
 # module "rds" {
 #   source = "./modules/rds"
@@ -107,8 +122,126 @@ module "s3" {
 #   private_subnet_ids       = aws_subnet.private[*].id
 #   availability_zones       = var.availability_zones
 #   kms_key_arn              = module.kms.shared_key_arn
-#   rds_monitoring_role_arn  = module.iam.rds_monitoring_role_arn
+#   rds_monitoring_role_arn  = aws_iam_role.rds_monitoring.arn
 # }
+resource "aws_vpc" "main" {
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = merge(var.tags, {
+    Name = "regression-test-vpc"
+  })
+}
+
+resource "aws_subnet" "private" {
+  count = length(var.availability_zones)
+
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"][count.index]
+  availability_zone = var.availability_zones[count.index]
+
+  tags = merge(var.tags, {
+    Name = "regression-test-private-${count.index + 1}"
+  })
+}
+
+# ---------------------------------------------------------------------------
+# IAM — RDS Enhanced Monitoring role (inline)
+# ---------------------------------------------------------------------------
+
+# data "aws_iam_policy_document" "rds_monitoring_assume" {
+#   statement {
+#     effect  = "Allow"
+#     actions = ["sts:AssumeRole"]
+#     principals {
+#       type        = "Service"
+#       identifiers = ["monitoring.rds.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role" "rds_monitoring" {
+#   name               = "regression-test-rds-monitoring-role"
+#   assume_role_policy = data.aws_iam_policy_document.rds_monitoring_assume.json
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-rds-monitoring-role"
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "rds_monitoring" {
+#   role       = aws_iam_role.rds_monitoring.name
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+# }
+
+# ---------------------------------------------------------------------------
+# IAM — EKS cluster role + node role (inline)
+# ---------------------------------------------------------------------------
+
+# data "aws_iam_policy_document" "eks_cluster_assume" {
+#   statement {
+#     effect  = "Allow"
+#     actions = ["sts:AssumeRole"]
+#     principals {
+#       type        = "Service"
+#       identifiers = ["eks.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role" "eks_cluster" {
+#   name               = "regression-test-eks-cluster-role"
+#   assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume.json
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-eks-cluster-role"
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+#   role       = aws_iam_role.eks_cluster.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+# }
+
+# data "aws_iam_policy_document" "eks_node_assume" {
+#   statement {
+#     effect  = "Allow"
+#     actions = ["sts:AssumeRole"]
+#     principals {
+#       type        = "Service"
+#       identifiers = ["ec2.amazonaws.com"]
+#     }
+#   }
+# }
+
+# resource "aws_iam_role" "eks_node" {
+#   name               = "regression-test-eks-node-role"
+#   assume_role_policy = data.aws_iam_policy_document.eks_node_assume.json
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-eks-node-role"
+#   })
+# }
+
+# resource "aws_iam_role_policy_attachment" "eks_node_policy" {
+#   role       = aws_iam_role.eks_node.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+# }
+
+# resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+#   role       = aws_iam_role.eks_node.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+# }
+
+# resource "aws_iam_role_policy_attachment" "eks_ecr_policy" {
+#   role       = aws_iam_role.eks_node.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+# }
+
+# ---------------------------------------------------------------------------
+# EKS
+# ---------------------------------------------------------------------------
 
 # module "eks" {
 #   source = "./modules/eks"
@@ -119,20 +252,35 @@ module "s3" {
 #   private_subnet_ids       = aws_subnet.private[*].id
 #   availability_zones       = var.availability_zones
 #   kms_key_arn              = module.kms.shared_key_arn
-#   eks_cluster_role_arn     = module.iam.eks_cluster_role_arn
-#   eks_node_role_arn        = module.iam.eks_node_role_arn
+#   eks_cluster_role_arn     = aws_iam_role.eks_cluster.arn
+#   eks_node_role_arn        = aws_iam_role.eks_node.arn
 # }
 
-# module "lambda" {
-#   source = "./modules/lambda"
+# ---------------------------------------------------------------------------
+# IAM — controls + shared roles (provides lambda_execution_role_arn)
+# ---------------------------------------------------------------------------
 
-#   create_failing_resources  = var.create_failing_resources
-#   tags                      = var.tags
-#   vpc_id                    = aws_vpc.main.id
-#   private_subnet_ids        = aws_subnet.private[*].id
-#   kms_key_arn               = module.kms.shared_key_arn
-#   lambda_execution_role_arn = module.iam.lambda_execution_role_arn
-# }
+module "iam" {
+  source = "./modules/iam"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
+
+# ---------------------------------------------------------------------------
+# Lambda
+# ---------------------------------------------------------------------------
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  create_failing_resources  = var.create_failing_resources
+  tags                      = var.tags
+  vpc_id                    = aws_vpc.main.id
+  private_subnet_ids        = aws_subnet.private[*].id
+  kms_key_arn               = module.kms.shared_key_arn
+  lambda_execution_role_arn = module.iam.lambda_execution_role_arn
+}
 
 # # ---------------------------------------------------------------------------
 # # Tier 3 — ELB + WAF (depend on s3; WAF needs ELB ARN)
@@ -242,7 +390,7 @@ module "s3" {
 #   vpc_id                   = aws_vpc.main.id
 #   private_subnet_ids       = aws_subnet.private[*].id
 #   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = var.kms_key_arn
+#   kms_key_arn              = module.kms.shared_key_arn
 # }
 
 # module "kinesis" {
