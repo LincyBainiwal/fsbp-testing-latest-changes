@@ -35,7 +35,8 @@ resource "aws_s3_account_public_access_block" "main" {
 # ---------------------------------------------------------------------------
 
 resource "aws_s3_bucket" "logs" {
-  bucket = "access-logs-${data.aws_caller_identity.current.account_id}"
+  bucket        = "access-logs-${data.aws_caller_identity.current.account_id}"
+  force_destroy = true
 
   tags = merge(var.tags, {
     Name    = "access-logs"

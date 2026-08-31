@@ -146,6 +146,19 @@ resource "aws_subnet" "private" {
   })
 }
 
+resource "aws_subnet" "public" {
+  count = length(var.availability_zones)
+
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"][count.index]
+  availability_zone       = var.availability_zones[count.index]
+  map_public_ip_on_launch = false
+
+  tags = merge(var.tags, {
+    Name = "regression-test-public-${count.index + 1}"
+  })
+}
+
 # ---------------------------------------------------------------------------
 # IAM — RDS Enhanced Monitoring role (inline)
 # ---------------------------------------------------------------------------
@@ -260,30 +273,83 @@ resource "aws_subnet" "private" {
 # IAM — controls + shared roles (provides lambda_execution_role_arn)
 # ---------------------------------------------------------------------------
 
-module "iam" {
-  source = "./modules/iam"
+# module "iam" {
+#   source = "./modules/iam"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
 # ---------------------------------------------------------------------------
 # Lambda
 # ---------------------------------------------------------------------------
 
-module "lambda" {
-  source = "./modules/lambda"
+# module "lambda" {
+#   source = "./modules/lambda"
 
-  create_failing_resources  = var.create_failing_resources
-  tags                      = var.tags
-  vpc_id                    = aws_vpc.main.id
-  private_subnet_ids        = aws_subnet.private[*].id
-  kms_key_arn               = module.kms.shared_key_arn
-  lambda_execution_role_arn = module.iam.lambda_execution_role_arn
-}
+#   create_failing_resources  = var.create_failing_resources
+#   tags                      = var.tags
+#   vpc_id                    = aws_vpc.main.id
+#   private_subnet_ids        = aws_subnet.private[*].id
+#   kms_key_arn               = module.kms.shared_key_arn
+#   lambda_execution_role_arn = module.iam.lambda_execution_role_arn
+# }
+
+# ---------------------------------------------------------------------------
+# RDS
+# ---------------------------------------------------------------------------
+
+# module "rds" {
+#   source = "./modules/rds"
+
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   availability_zones       = var.availability_zones
+#   kms_key_arn              = module.kms.shared_key_arn
+#   rds_monitoring_role_arn  = module.iam.rds_monitoring_role_arn
+# }
+
+# module "ec2" {
+#   source = "./modules/ec2"
+
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   public_subnet_ids        = aws_subnet.public[*].id
+#   availability_zones       = var.availability_zones
+#   instance_profile_name    = module.iam.ec2_instance_profile_name
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
+
+# ---------------------------------------------------------------------------
+# CloudTrail
+# ---------------------------------------------------------------------------
+
+# module "cloudtrail" {
+#   source = "./modules/cloudtrail"
+
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   kms_key_arn              = module.kms.shared_key_arn
+#   cloudwatch_role_arn      = module.iam.cloudtrail_cloudwatch_role_arn
+# }
+
+# ---------------------------------------------------------------------------
+# S3 — provides logs_bucket_id for ELB access logs
+# ---------------------------------------------------------------------------
+
+# module "s3" {
+#   source = "./modules/s3"
+
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
 # # ---------------------------------------------------------------------------
-# # Tier 3 — ELB + WAF (depend on s3; WAF needs ELB ARN)
+# # ELB
 # # ---------------------------------------------------------------------------
 
 # module "elb" {
@@ -307,7 +373,29 @@ module "lambda" {
 # }
 
 # # ---------------------------------------------------------------------------
-# # Tier 4 — ECS (depends on kms + iam + ec2)
+# # Inline security group for ECS tasks (module.ec2 not active)
+# # ---------------------------------------------------------------------------
+
+# resource "aws_security_group" "app" {
+#   name        = "regression-test-app-sg"
+#   description = "Application security group for ECS Fargate tasks."
+#   vpc_id      = aws_vpc.main.id
+
+#   egress {
+#     description = "Allow all outbound"
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   tags = merge(var.tags, {
+#     Name = "regression-test-app-sg"
+#   })
+# }
+
+# # ---------------------------------------------------------------------------
+# # Tier 4 — ECS (depends on kms + iam + inline sg)
 # # ---------------------------------------------------------------------------
 
 # module "ecs" {
@@ -319,7 +407,7 @@ module "lambda" {
 #   private_subnet_ids          = aws_subnet.private[*].id
 #   kms_key_arn                 = module.kms.shared_key_arn
 #   ecs_task_execution_role_arn = module.iam.ecs_task_execution_role_arn
-#   app_security_group_id       = module.ec2.app_security_group_id
+#   app_security_group_id       = aws_security_group.app.id
 # }
 
 # # ---------------------------------------------------------------------------
@@ -372,15 +460,15 @@ module "lambda" {
 #   kms_key_arn              = module.kms.shared_key_arn
 # }
 
-# module "redshift_serverless" {
-#   source = "./modules/redshiftserverless"
+module "redshift_serverless" {
+  source = "./modules/redshiftserverless"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
 # module "dynamo_db" {
 #   source = "./modules/dynamo-db"

@@ -24,11 +24,12 @@ input "eks_log_types" {
 resource_policy "aws_eks_cluster" "audit_logging_enabled" {
     enforcement_level = input.eks-cluster-log-enabled-enforcement-level
     locals {
-        enabled_log_types = core::try(attrs.enabled_cluster_log_types, [])
-        audit_enabled = core::contains(local.enabled_log_types, "audit")
+        # core::try with explicit [] fallback handles both null and missing attribute
+        enabled_log_types = core::try(core::length(attrs.enabled_cluster_log_types) >= 0 ? attrs.enabled_cluster_log_types : [], [])
+        audit_enabled     = core::length(local.enabled_log_types) > 0 ? core::contains(local.enabled_log_types, "audit") : false
         valid_input = core::contains(core::split(",", input.eks_log_types), "audit")
-        input_logs_not_enabled = local.valid_input ? core::contain([
-            for type in input.eks_log_types : core::contains(local.enabled_log_types, type)
+        input_logs_not_enabled = local.valid_input ? core::contains([
+            for type in core::split(",", input.eks_log_types) : core::contains(local.enabled_log_types, type)
         ], false) : false
         input_condition = input.eks_log_types != "" ? local.input_logs_not_enabled : true
     }

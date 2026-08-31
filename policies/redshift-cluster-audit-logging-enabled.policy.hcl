@@ -32,8 +32,8 @@ resource_policy "aws_redshift_logging" "logging_properly_configured" {
     
     # Check CloudWatch logging configuration
     is_cloudwatch_logging = local.log_dest_type == "cloudwatch"
-    log_exports = core::try(attrs.log_exports, [])
-    cloudwatch_configured = local.is_cloudwatch_logging && core::length(local.log_exports) > 0
+    log_exports_count = core::try(core::length(attrs.log_exports), 0)
+    cloudwatch_configured = local.is_cloudwatch_logging && local.log_exports_count > 0
     
     # Logging is properly configured if either S3 or CloudWatch is set up correctly
     is_compliant = local.s3_configured || local.cloudwatch_configured

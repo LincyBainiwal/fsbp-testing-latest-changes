@@ -37,3 +37,9 @@ variable "db_username" {
   type        = string
   default     = "appuser"
 }
+
+variable "private_subnet_cidrs" {
+  description = "CIDR blocks of the private subnets (used by Redshift, OpenSearch, etc. for security group rules)."
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+}
