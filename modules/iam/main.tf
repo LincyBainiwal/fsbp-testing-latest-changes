@@ -243,7 +243,7 @@ data "aws_iam_policy_document" "support_trust" {
 
 resource "aws_iam_role" "support_pass" {
   name               = "cis116-support-role"
-  description        = "Break-glass support role — satisfies CIS-1.16"
+  description        = "Break-glass support role - satisfies CIS-1.16"
   assume_role_policy = data.aws_iam_policy_document.support_trust.json
   path               = "/"
 
@@ -408,7 +408,7 @@ data "aws_iam_policy_document" "ecs_trust" {
 
 resource "aws_iam_role" "ecs_task_execution" {
   name               = "shared-ecs-task-execution-role"
-  description        = "ECS task execution role — allows pulling images and writing logs"
+  description        = "ECS task execution role - allows pulling images and writing logs"
   assume_role_policy = data.aws_iam_policy_document.ecs_trust.json
   path               = "/"
 

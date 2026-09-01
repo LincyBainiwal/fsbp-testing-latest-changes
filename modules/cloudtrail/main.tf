@@ -103,9 +103,9 @@ data "aws_iam_policy_document" "trail_logs_bucket" {
     }
 
     condition {
-      test     = "StringEquals"
+      test     = "StringLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:cloudtrail:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:trail/regression-test-pass"]
+      values   = ["arn:aws:cloudtrail:*:${data.aws_caller_identity.current.account_id}:trail/*"]
     }
   }
 

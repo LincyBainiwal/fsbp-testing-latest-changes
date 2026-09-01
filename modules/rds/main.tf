@@ -69,7 +69,7 @@ resource "aws_db_instance" "pass" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -86,7 +86,7 @@ resource "aws_db_instance" "pass" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -117,7 +117,7 @@ resource "aws_db_instance" "public_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -134,7 +134,7 @@ resource "aws_db_instance" "public_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -172,7 +172,7 @@ resource "aws_db_instance" "encrypted_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -189,7 +189,7 @@ resource "aws_db_instance" "encrypted_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -227,7 +227,7 @@ resource "aws_db_instance" "multiaz_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -244,7 +244,7 @@ resource "aws_db_instance" "multiaz_fail" {
   password = var.db_password
 
   multi_az                = false # intentional violation
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -282,7 +282,7 @@ resource "aws_db_instance" "deletion_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -299,7 +299,7 @@ resource "aws_db_instance" "deletion_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -337,7 +337,7 @@ resource "aws_db_instance" "backup_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -391,7 +391,7 @@ resource "aws_db_instance" "upgrade_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -408,7 +408,7 @@ resource "aws_db_instance" "upgrade_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -446,7 +446,7 @@ resource "aws_db_instance" "monitoring_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -463,7 +463,7 @@ resource "aws_db_instance" "monitoring_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -500,7 +500,7 @@ resource "aws_db_instance" "iam_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -517,7 +517,7 @@ resource "aws_db_instance" "iam_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -555,7 +555,7 @@ resource "aws_db_instance" "admin_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -572,7 +572,7 @@ resource "aws_db_instance" "admin_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -610,7 +610,7 @@ resource "aws_db_instance" "port_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -627,7 +627,7 @@ resource "aws_db_instance" "port_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -665,7 +665,7 @@ resource "aws_db_instance" "tags_fail" {
 
   engine         = "mysql"
   engine_version = "8.0.35"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   allocated_storage     = 20
   max_allocated_storage = 100
@@ -682,7 +682,7 @@ resource "aws_db_instance" "tags_fail" {
   password = var.db_password
 
   multi_az                = true
-  backup_retention_period = 7
+  backup_retention_period = 1
   backup_window           = "03:00-04:00"
   maintenance_window      = "Mon:04:00-Mon:05:00"
 
@@ -730,7 +730,7 @@ resource "aws_rds_cluster" "pass" {
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
-  backup_retention_period = 7
+  backup_retention_period = 1
   deletion_protection     = true
 
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
@@ -755,7 +755,7 @@ resource "aws_rds_cluster_instance" "pass" {
   cluster_identifier = aws_rds_cluster.pass.id
 
   engine         = "aurora-mysql"
-  instance_class = "db.t3.medium"
+  instance_class = "db.t3.micro"
 
   publicly_accessible        = false
   auto_minor_version_upgrade = true
@@ -786,7 +786,7 @@ resource "aws_rds_cluster" "encrypted_fail" {
   db_subnet_group_name   = aws_db_subnet_group.main.name
   vpc_security_group_ids = [aws_security_group.rds.id]
 
-  backup_retention_period = 7
+  backup_retention_period = 1
   deletion_protection     = true
 
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]

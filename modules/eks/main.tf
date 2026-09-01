@@ -14,7 +14,7 @@
 
 resource "aws_security_group" "eks_cluster" {
   name        = "eks-cluster-sg"
-  description = "EKS control plane — accepts HTTPS from private subnets only"
+  description = "EKS control plane - accepts HTTPS from private subnets only"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -45,7 +45,7 @@ data "aws_subnet" "private" {
 
 resource "aws_security_group" "eks_nodes" {
   name        = "eks-nodes-sg"
-  description = "EKS managed nodes — intra-cluster and ephemeral return traffic"
+  description = "EKS managed nodes - intra-cluster and ephemeral return traffic"
   vpc_id      = var.vpc_id
 
   ingress {

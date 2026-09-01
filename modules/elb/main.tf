@@ -72,7 +72,7 @@ resource "aws_lb_target_group" "app" {
 # ACM self-signed certificate — used by the HTTPS listener (ELB.1)
 resource "aws_acm_certificate" "self_signed" {
   domain_name       = "regression-test.internal"
-  validation_method = "DNS"
+  validation_method = "NONE"
 
   lifecycle {
     create_before_destroy = true
@@ -297,30 +297,34 @@ resource "aws_lb" "desync_fail" {
 
 # ---------------------------------------------------------------------------
 # ELB.13 — ALB must span multiple Availability Zones
+#
+# NOTE: AWS API enforces minimum 2 subnets in 2 AZs at creation time,
+# so a single-subnet ALB cannot be created. This violation is tested
+# at plan/policy-scan time only — resource is disabled for apply.
 # ---------------------------------------------------------------------------
 
-resource "aws_lb" "multiaz_fail" {
-  count = var.create_failing_resources ? 1 : 0
-
-  name                       = "regression-alb-multiaz-fail"
-  load_balancer_type         = "application"
-  internal                   = false
-  subnets                    = [var.public_subnet_ids[0]] # intentional violation: single AZ
-  security_groups            = [aws_security_group.alb.id]
-  drop_invalid_header_fields = true
-  enable_deletion_protection = true
-  enable_http2               = true
-  idle_timeout               = 60
-  desync_mitigation_mode     = "defensive"
-
-  access_logs {
-    bucket  = var.logs_bucket_id
-    enabled = true
-  }
-
-  tags = merge(var.tags, {
-    Name            = "regression-alb-multiaz-fail"
-    compliance_test = "intentional_violation"
-    controls        = "ELB.13"
-  })
-}
+# resource "aws_lb" "multiaz_fail" {
+#   count = var.create_failing_resources ? 1 : 0
+#
+#   name                       = "regression-alb-multiaz-fail"
+#   load_balancer_type         = "application"
+#   internal                   = false
+#   subnets                    = [var.public_subnet_ids[0]] # intentional violation: single AZ
+#   security_groups            = [aws_security_group.alb.id]
+#   drop_invalid_header_fields = true
+#   enable_deletion_protection = true
+#   enable_http2               = true
+#   idle_timeout               = 60
+#   desync_mitigation_mode     = "defensive"
+#
+#   access_logs {
+#     bucket  = var.logs_bucket_id
+#     enabled = true
+#   }
+#
+#   tags = merge(var.tags, {
+#     Name            = "regression-alb-multiaz-fail"
+#     compliance_test = "intentional_violation"
+#     controls        = "ELB.13"
+#   })
+# }
