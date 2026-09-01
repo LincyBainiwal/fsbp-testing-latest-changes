@@ -50,7 +50,7 @@ resource_policy "aws_inspector2_organization_configuration" "lambda_org_scanning
 }
 
 # Block 3: Existence check — anchored on aws_inspector2_organization_configuration.
-# Verifies that at least one aws_inspector2_enabler with LAMBDA is also present in the plan.
+# Verifies that at least one aws_inspector2_enabler with LAMBDA is also present . 
 resource_policy "aws_inspector2_organization_configuration" "lambda_enabler_must_exist" {
     enforcement_level = input.inspector-lambda-standard-scan-enabled-enforcement-level
     filter = core::try(attrs.auto_enable, null) != null && core::length(core::try(attrs.auto_enable, [])) > 0

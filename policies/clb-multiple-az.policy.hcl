@@ -24,27 +24,26 @@ input "clb_min_availability_zones" {
 resource_policy "aws_elb" "multiple_availability_zones" {
     enforcement_level = input.clb-multiple-az-enforcement-level
     locals {
-        # EC2-Classic ELBs declare AZs directly via availability_zones.
         ec2_classic_az_count = core::try(core::length(attrs.availability_zones), 0)
-
-        # VPC ELBs use subnets. Resolve each subnet ID to an aws_subnet resource
-        # and count the number of distinct availability_zone values.
-        # core::getresources() is available — the earlier comment claiming it was
-        # not was incorrect (checklist #2: no false limitation claims).
-        subnet_ids = core::try(attrs.subnets, [])
-        subnets_data = [
+        subnet_ids = core::try(attrs.subnets, null) != null ? attrs.subnets : []
+        subnet_lookups = {
             for subnet_id in local.subnet_ids :
-            core::getresources("aws_subnet", { id = subnet_id })[0]
-            if core::length(core::getresources("aws_subnet", { id = subnet_id })) > 0
+            subnet_id => core::getresources("aws_subnet", { id = subnet_id })
+        }
+        subnets_data = [
+            for subnet_id, results in local.subnet_lookups :
+            results[0] if core::length(results) > 0
         ]
-        subnet_azs     = [for s in local.subnets_data : core::try(s.availability_zone, "")]
+
+        subnet_azs = [
+            for s in local.subnets_data :
+            core::try(s.availability_zone, "")
+            if core::try(s.availability_zone, "") != ""
+        ]
         distinct_azs   = core::distinct(local.subnet_azs)
         vpc_az_count   = core::length(local.distinct_azs)
 
         is_valid_input = core::contains([2, 3, 4, 5, 6], input.clb_min_availability_zones)
-
-        # Use EC2-classic count when availability_zones is populated; otherwise
-        # use the distinct-AZ count derived from resolved subnet resources.
         actual_az_count = local.ec2_classic_az_count > 0 ? local.ec2_classic_az_count : local.vpc_az_count
     }
 

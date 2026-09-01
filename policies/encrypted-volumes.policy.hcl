@@ -77,6 +77,9 @@ resource_policy "aws_launch_template" "ebs_encryption_required" {
         has_mappings    = core::length(local.block_mappings) > 0
 
         # Each mapping may have an ebs block; absence means no explicit setting.
+        # mapping.ebs may be a single object rather than a list depending on plan
+        # serialization. core::try catches the [0] indexing failure and returns
+        # false (conservative — treats as unencrypted).
         unencrypted_ebs_mappings = [
             for mapping in local.block_mappings :
             mapping if core::try(mapping.ebs[0].encrypted, false) != true

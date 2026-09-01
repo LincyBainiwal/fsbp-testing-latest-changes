@@ -113,9 +113,6 @@ resource "aws_instance" "pass_both_configurations" {
 }
 
 # Test 8: FAIL - No associate_public_ip_address set but subnet has map_public_ip_on_launch=true.
-# This is the core gap: the old policy passed this silently because it never
-# checked the subnet. The fixed policy resolves the subnet via getresources()
-# and correctly fails it.
 resource "aws_instance" "fail_subnet_auto_assigns_public" {
   expect_failure = true
   attrs = {

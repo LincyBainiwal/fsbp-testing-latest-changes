@@ -19,6 +19,7 @@ input "eks-cluster-supported-version-enforcement-level" {
 resource_policy "aws_eks_cluster" "supported_version" {
     enforcement_level = input.eks-cluster-supported-version-enforcement-level
     locals {
+        # NOTE: Update this value whenever AWS raises the EKS supported version floor.
         oldest_version_supported = "1.33"
 
         # Default to "" (not to a passing version) so a missing version attribute fails

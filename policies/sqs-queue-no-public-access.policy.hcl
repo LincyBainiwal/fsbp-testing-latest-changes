@@ -20,23 +20,22 @@ resource_policy "aws_sqs_queue_policy" "no_public_access" {
     enforcement_level = input.sqs-queue-no-public-access-enforcement-level
     locals {
         policy_value = core::try(attrs.policy, null)
-        policy_doc   = local.policy_value != null ? core::jsondecode(local.policy_value) : null
+        policy_doc   = local.policy_value != null && local.policy_value != "" ? core::jsondecode(local.policy_value) : null
         statements   = local.policy_doc != null ? core::try(local.policy_doc.Statement, []) : []
 
-        # A statement is publicly accessible when Effect=Allow, Principal=* and no
-        # restrictive Condition is present.
         public_statements = [
             for s in local.statements : s
             if core::try(s.Effect, "") == "Allow"
             && (
                 core::try(s.Principal, "") == "*" ||
-                core::try(s.Principal.AWS, "") == "*"
+                core::try(s.Principal.AWS, "") == "*" ||
+                core::try(core::contains(core::try([for v in s.Principal.AWS : v], []), "*"), false)
             )
             && core::try(s.Condition, null) == null
         ]
     }
 
-    filter = local.policy_value != null
+    filter = local.policy_value != null && local.policy_value != ""
 
     enforce {
         condition     = core::length(local.public_statements) == 0
@@ -48,7 +47,7 @@ resource_policy "aws_sqs_queue" "no_public_access_inline" {
     enforcement_level = input.sqs-queue-no-public-access-enforcement-level
     locals {
         policy_value = core::try(attrs.policy, null)
-        policy_doc   = local.policy_value != null ? core::jsondecode(local.policy_value) : null
+        policy_doc   = local.policy_value != null && local.policy_value != "" ? core::jsondecode(local.policy_value) : null
         statements   = local.policy_doc != null ? core::try(local.policy_doc.Statement, []) : []
 
         public_statements = [
@@ -56,13 +55,14 @@ resource_policy "aws_sqs_queue" "no_public_access_inline" {
             if core::try(s.Effect, "") == "Allow"
             && (
                 core::try(s.Principal, "") == "*" ||
-                core::try(s.Principal.AWS, "") == "*"
+                core::try(s.Principal.AWS, "") == "*" ||
+                core::try(core::contains(core::try([for v in s.Principal.AWS : v], []), "*"), false)
             )
             && core::try(s.Condition, null) == null
         ]
     }
 
-    filter = local.policy_value != null
+    filter = local.policy_value != null && local.policy_value != ""
 
     enforce {
         condition     = core::length(local.public_statements) == 0

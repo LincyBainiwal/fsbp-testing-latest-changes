@@ -94,8 +94,6 @@ resource "aws_elb" "fail_vpc_1_subnet" {
 }
 
 # Test 7: FAIL - VPC ELB with 2 subnets both in the SAME AZ
-# This is the core bug the fix addresses: subnet count (2) would have passed
-# the old proxy check, but distinct AZ count (1) correctly fails it.
 resource "aws_elb" "fail_vpc_2_subnets_same_az" {
   expect_failure = true
   attrs = {

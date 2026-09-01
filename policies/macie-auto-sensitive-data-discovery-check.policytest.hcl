@@ -45,8 +45,6 @@ resource "aws_macie2_account" "fail_macie_disabled" {
 # --------------- FILTERED cases ---------------
 
 # Test 5: FILTERED - No status attribute (filtered out, not evaluated)
-# NOTE: This policy only validates Macie is enabled — it cannot validate
-# automated sensitive data discovery (real Terraform provider gap).
 resource "aws_macie2_account" "filtered_no_status" {
   attrs = {
     finding_publishing_frequency = "SIX_HOURS"

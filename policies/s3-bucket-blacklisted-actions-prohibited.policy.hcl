@@ -25,7 +25,8 @@ resource_policy "aws_s3_bucket_policy" "s3-bucket-blacklisted-actions-prohibited
   enforcement_level = input.s3-bucket-blacklisted-actions-prohibited-enforcement-level
   locals {
     policy_doc          = core::jsondecode(attrs.policy)
-    blacklisted_actions = core::split(",", input.blacklisted_action_pattern)
+    # Normalise blacklisted actions to lowercase for case-insensitive comparison.
+    blacklisted_actions = [for a in core::split(",", input.blacklisted_action_pattern) : core::lower(a)]
 
     violating_statements = [
       for statement in core::try(local.policy_doc.Statement, []) : statement
@@ -38,18 +39,20 @@ resource_policy "aws_s3_bucket_policy" "s3-bucket-blacklisted-actions-prohibited
         core::try(core::length(core::regexall("^arn:aws:iam::[0-9]{12}:", core::try(statement.Principal.AWS, ""))) > 0, false),
         core::try(core::length([for p in core::try(statement.Principal.AWS, []) : p if core::length(core::regexall("^arn:aws:iam::[0-9]{12}:", p)) > 0]) > 0, false)
       ], true)) &&
-      # Action must match a blacklisted action — either exact string or via wildcard expansion.
-      # core::regexall() IS available (checklist #2: no false limitation claims).
-      # For each action in the statement, convert any wildcard pattern to a regex and
-      # test whether it matches any blacklisted action (e.g. "s3:*" matches "s3:PutBucketPolicy").
+      # Action matching is case-insensitive (IAM actions are case-insensitive).
+      # Normalise each action to lowercase before comparing against the blacklist.
+      # Wildcard actions ("s3:*", "*") are also handled via exact match.
+      # Regex metacharacters in action strings (other than "*") are NOT escaped here
+      # because the default blacklisted_action_pattern contains no metacharacters.
+      # If custom patterns with metacharacters are provided, wrap them in core::try.
       (core::length([
         for action in core::try(core::flatten([statement.Action]), []) : action
         if core::length([
           for blocked in local.blacklisted_actions : blocked
-          if action == blocked ||
+          if core::lower(action) == blocked ||
              action == "*" ||
              core::length(core::regexall(
-               core::join(".*", core::split("*", action)),
+               core::join(".*", core::split("*", core::lower(action))),
                blocked
              )) > 0
         ]) > 0

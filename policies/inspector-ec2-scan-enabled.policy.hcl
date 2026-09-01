@@ -17,7 +17,6 @@ input "inspector-ec2-scan-enabled-enforcement-level" {
 }
 
 locals {
-    # Plan-wide lookup of all Inspector enabler resources.
     # Used by the existence-check block below to assert EC2 scanning is present.
     all_ec2_enablers = core::getresources("aws_inspector2_enabler", {})
     has_ec2_scanner  = core::length([
@@ -53,7 +52,7 @@ resource_policy "aws_inspector2_organization_configuration" "ec2_org_scanning_en
 
 # Block 3: Existence check — anchored on aws_inspector2_organization_configuration
 # (a different resource type that fires independently). Verifies that at least one
-# aws_inspector2_enabler with EC2 is also present in the plan (checklist #13).
+# aws_inspector2_enabler with EC2 is also present 
 resource_policy "aws_inspector2_organization_configuration" "ec2_enabler_must_exist" {
     enforcement_level = input.inspector-ec2-scan-enabled-enforcement-level
     filter = core::try(attrs.auto_enable, null) != null && core::length(core::try(attrs.auto_enable, [])) > 0

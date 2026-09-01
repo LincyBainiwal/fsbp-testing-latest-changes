@@ -45,10 +45,6 @@ resource_policy "aws_dynamodb_table" "autoscaling_enabled" {
 
   locals {
     table_name = core::try(attrs.name, "")
-
-    # Look for aws_appautoscaling_target resources covering this table's
-    # read and write capacity dimensions. Both must exist for the table to
-    # be considered compliant (checklist item #1: no tautological condition).
     read_scaling_targets = core::getresources("aws_appautoscaling_target", {
       resource_id        = "table/${local.table_name}"
       scalable_dimension = "dynamodb:table:ReadCapacityUnits"
@@ -80,8 +76,6 @@ resource_policy "aws_dynamodb_table" "autoscaling_enabled" {
     error_message = "DynamoDB table '${local.table_name}' uses PROVISIONED billing mode but is missing aws_appautoscaling_target resources for read and/or write capacity. Add aws_appautoscaling_target with scalable_dimension='dynamodb:table:ReadCapacityUnits' and 'dynamodb:table:WriteCapacityUnits', each with resource_id='table/${local.table_name}'."
   }
 
-  # Optional parameter range validation (only fails if a non-zero value was supplied
-  # that falls outside the valid range — a value of 0 means "not provided").
   enforce {
     condition     = local.valid_min_read_capacity
     error_message = "input.minProvisionedReadCapacity must be between 1 and 40000 when provided. Current value: ${input.minProvisionedReadCapacity}. Use 0 to leave the parameter unset."

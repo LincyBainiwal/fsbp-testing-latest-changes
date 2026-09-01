@@ -95,14 +95,16 @@ resource_policy "aws_network_acl_rule" "no_unrestricted_ssh_rdp" {
         ipv6_cidr_block = core::try(attrs.ipv6_cidr_block, "")
         protocol        = core::try(attrs.protocol, "")
 
-        # "-1" means all-traffic and must be treated as a matching protocol,
-        # mirroring the aws_network_acl inline-rule block above.
-        # for protocol="-1", causing a false-positive failure on restricted rules.
+        # "-1" means all-traffic. The Terraform provider stores from_port=0
+        # and to_port=0 for all-traffic rules, so the normal port-range check
+        # (from_port <= 22 && to_port >= 22) evaluates to false and the rule
+        # would silently pass. Treat protocol="-1" as covering all ports.
         is_matching_protocol = local.protocol == "tcp" || local.protocol == "udp" || local.protocol == "-1"
+        is_all_traffic       = local.protocol == "-1"
 
         is_unrestricted = local.cidr_block == "0.0.0.0/0" || local.ipv6_cidr_block == "::/0"
-        allows_ssh      = local.from_port <= 22 && local.to_port >= 22
-        allows_rdp      = local.from_port <= 3389 && local.to_port >= 3389
+        allows_ssh      = local.is_all_traffic || (local.from_port <= 22 && local.to_port >= 22)
+        allows_rdp      = local.is_all_traffic || (local.from_port <= 3389 && local.to_port >= 3389)
     }
 
     enforce {

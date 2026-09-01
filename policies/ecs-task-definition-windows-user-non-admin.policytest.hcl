@@ -159,7 +159,7 @@ EOT
   }
 }
 
-# FAIL: Canonical casing "ContainerAdministrator" — missed by the old lowercase-only check
+# FAIL: Canonical casing "ContainerAdministrator" 
 resource "aws_ecs_task_definition" "fail_windows_canonical_casing" {
   expect_failure = true
   attrs = {
@@ -183,7 +183,7 @@ EOT
   }
 }
 
-# FAIL: All-uppercase "CONTAINERADMINISTRATOR" — missed by the old lowercase-only check
+# FAIL: All-uppercase "CONTAINERADMINISTRATOR" 
 resource "aws_ecs_task_definition" "fail_windows_uppercase" {
   expect_failure = true
   attrs = {

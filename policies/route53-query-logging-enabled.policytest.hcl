@@ -103,8 +103,6 @@ resource "aws_route53_query_log" "log4" {
 }
 
 # Test 6: FAIL - Query log resource exists but cloudwatch_log_group_arn is empty
-# This is the core bug the fix addresses: presence of the log resource alone is
-# not sufficient — the ARN must be non-empty (checklist #9: presence-only check).
 resource "aws_route53_zone" "public_zone_empty_arn" {
   expect_failure = true
   attrs = {

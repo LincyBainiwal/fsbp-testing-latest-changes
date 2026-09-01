@@ -19,6 +19,7 @@ input "eks-nodegroup-supported-version-check-enforcement-level" {
 resource_policy "aws_eks_node_group" "supported_ng_version" {
     enforcement_level = input.eks-nodegroup-supported-version-check-enforcement-level
     locals {
+        # NOTE: Update this value whenever AWS raises the EKS supported version floor.
         oldest_ng_version_supported = "1.33"
 
         # Read version directly from the node group resource, not from the cluster.

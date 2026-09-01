@@ -74,3 +74,20 @@ resource "aws_sqs_queue" "fail_inline_wildcard_principal" {
     policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"sqs:SendMessage\",\"Resource\":\"*\"}]}"
   }
 }
+
+# Test 9: FAIL - Principal.AWS in list form ["*"] — must be caught same as string "*"
+resource "aws_sqs_queue_policy" "fail_wildcard_aws_list_form" {
+  expect_failure = true
+  attrs = {
+    queue_url = "https://sqs.us-east-1.amazonaws.com/123456789012/my-queue"
+    policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"AWS\":[\"*\"]},\"Action\":\"sqs:SendMessage\",\"Resource\":\"*\"}]}"
+  }
+}
+
+# Test 10: PASS - empty-string policy value is filtered out 
+resource "aws_sqs_queue_policy" "pass_empty_string_policy" {
+  attrs = {
+    queue_url = "https://sqs.us-east-1.amazonaws.com/123456789012/my-queue"
+    policy    = ""
+  }
+}

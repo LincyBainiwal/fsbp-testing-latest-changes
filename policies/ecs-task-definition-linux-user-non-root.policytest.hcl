@@ -223,7 +223,7 @@ EOT
   }
 }
 
-# Fail Case 6: user = "0:0" (root UID with root GID) — missed by old exact-match check
+# Fail Case 6: user = "0:0" (root UID with root GID) 
 resource "aws_ecs_task_definition" "fail_root_uid_gid" {
   expect_failure = true
   attrs = {
@@ -243,7 +243,7 @@ EOT
   }
 }
 
-# Fail Case 7: user = "0:1000" (root UID with non-root GID) — missed by old exact-match check
+# Fail Case 7: user = "0:1000" (root UID with non-root GID) 
 resource "aws_ecs_task_definition" "fail_root_uid_nonroot_gid" {
   expect_failure = true
   attrs = {
@@ -263,7 +263,7 @@ EOT
   }
 }
 
-# Fail Case 8: user = "root:app" (root username with non-root group) — missed by old exact-match check
+# Fail Case 8: user = "root:app" (root username with non-root group) 
 resource "aws_ecs_task_definition" "fail_root_username_nonroot_group" {
   expect_failure = true
   attrs = {

@@ -17,8 +17,7 @@ resource "aws_ssm_service_setting" "pass_public_sharing_disabled" {
 }
 
 # Test 2: PASS - Unrelated SSM setting alongside the required one
-# The unrelated setting must NOT fail (old bug: first enforce block failed it).
-# The filter now correctly scopes evaluation to the required setting_id only.
+# The unrelated setting must NOT fail .
 resource "aws_ssm_service_setting" "pass_unrelated_setting_alongside" {
   attrs = {
     setting_id    = "/ssm/managed-instance/activation-tier"

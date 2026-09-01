@@ -17,9 +17,6 @@ input "ec2-imdsv2-check-enforcement-level" {
 }
 
 # Enforce IMDSv2 on individual aws_instance resources.
-# The account-level aws_ec2_instance_metadata_defaults resource is NOT
-# sufficient — per-instance metadata_options override account defaults
-# at launch time (checklist #6: correct resource scope).
 resource_policy "aws_instance" "imds_v2_required" {
   enforcement_level = input.ec2-imdsv2-check-enforcement-level
   locals {

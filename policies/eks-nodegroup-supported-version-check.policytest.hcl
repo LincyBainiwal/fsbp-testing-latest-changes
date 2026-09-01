@@ -57,8 +57,6 @@ resource "aws_eks_node_group" "fail_ng_just_below_min" {
 }
 
 # Test 5: FAIL - Node group with no version attribute set.
-# The old policy defaulted to the cluster version (or "1.33") and passed silently.
-# The fixed policy defaults to "" and fails closed.
 resource "aws_eks_node_group" "fail_ng_no_version" {
     expect_failure = true
     attrs = {
@@ -69,8 +67,6 @@ resource "aws_eks_node_group" "fail_ng_no_version" {
 }
 
 # Test 6: FAIL - Node group with old version even though cluster has a compliant version.
-# This is the core bug scenario: the old policy would pass this because it read
-# the cluster version (1.33) not the node group version (1.28).
 resource "aws_eks_node_group" "fail_ng_old_version_compliant_cluster" {
     expect_failure = true
     attrs = {

@@ -18,8 +18,6 @@ input "route53-query-logging-enabled-enforcement-level" {
 
 locals {
     all_query_logs = core::getresources("aws_route53_query_log", {})
-
-    # Build lookup map for O(1) performance: zone_id -> query_log
     query_log_map = {
         for log in local.all_query_logs :
         log.zone_id => log

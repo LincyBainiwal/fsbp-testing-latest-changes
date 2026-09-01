@@ -132,7 +132,7 @@ resource "aws_cognito_user_pool" "fail_no_sign_in_policy_mfa_off" {
 }
 
 # Test 11: FAIL - Traditional pool with NO sign_in_policy and MFA not set at all
-# (defaults to "OFF"). Same gap as Test 10 but with the attribute omitted entirely.
+# (defaults to "OFF"). 
 resource "aws_cognito_user_pool" "fail_no_sign_in_policy_no_mfa_attr" {
   expect_failure = true
   attrs = {

@@ -34,6 +34,11 @@ resource_policy "aws_instance" "no_public_ipv4" {
     # When associate_public_ip_address is not explicitly set, the instance
     # inherits the subnet's map_public_ip_on_launch setting. Resolve the
     # subnet and check that attribute.
+    # KNOWN LIMITATION: When associate_public_ip_address is unset and subnet_id
+    # is also absent (e.g. the instance uses a default subnet resolved at apply
+    # time), should_check_subnet = false and the instance passes this check even
+    # if it would land in a public subnet. This cannot be resolved at plan time
+    # without subnet data
     subnet_id           = core::try(attrs.subnet_id, "")
     should_check_subnet = !local.explicitly_public && local.subnet_id != ""
     subnet_data         = local.should_check_subnet ? core::getresources("aws_subnet", { id = local.subnet_id }) : []

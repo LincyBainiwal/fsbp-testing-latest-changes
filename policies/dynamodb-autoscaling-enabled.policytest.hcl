@@ -9,7 +9,6 @@ policytest {
 # --------------- PASS cases ---------------
 
 # Test 1: PASS - On-demand (PAY_PER_REQUEST) table — filtered out, always compliant
-# On-demand tables scale automatically; the autoscaling control does not apply.
 resource "aws_dynamodb_table" "pass_on_demand_table" {
   attrs = {
     name         = "on-demand-table"
@@ -152,5 +151,60 @@ resource "aws_appautoscaling_target" "fail_write_only_target" {
     service_namespace  = "dynamodb"
     min_capacity       = 1
     max_capacity       = 100
+  }
+}
+
+# --------------- Parameter range validation tests ---------------
+# A value of 0 means "not provided" and must always pass.
+
+# Test 7: FAIL - invalid minProvisionedReadCapacity (value > 40000)
+resource "aws_dynamodb_table" "fail_invalid_min_read_capacity" {
+  expect_failure = true
+  attrs = {
+    name           = "invalid-min-read-cap-table"
+    billing_mode   = "PROVISIONED"
+    read_capacity  = 5
+    write_capacity = 5
+    hash_key       = "id"
+    attribute      = [{ name = "id", type = "S" }]
+  }
+}
+
+# Test 8: FAIL - invalid targetReadUtilization (value > 90)
+resource "aws_dynamodb_table" "fail_invalid_target_read_util" {
+  expect_failure = true
+  attrs = {
+    name           = "invalid-target-read-util-table"
+    billing_mode   = "PROVISIONED"
+    read_capacity  = 5
+    write_capacity = 5
+    hash_key       = "id"
+    attribute      = [{ name = "id", type = "S" }]
+  }
+}
+
+# Test 9: FAIL - invalid minProvisionedWriteCapacity (value > 40000)
+resource "aws_dynamodb_table" "fail_invalid_min_write_capacity" {
+  expect_failure = true
+  attrs = {
+    name           = "invalid-min-write-cap-table"
+    billing_mode   = "PROVISIONED"
+    read_capacity  = 5
+    write_capacity = 5
+    hash_key       = "id"
+    attribute      = [{ name = "id", type = "S" }]
+  }
+}
+
+# Test 10: FAIL - invalid targetWriteUtilization (value > 90)
+resource "aws_dynamodb_table" "fail_invalid_target_write_util" {
+  expect_failure = true
+  attrs = {
+    name           = "invalid-target-write-util-table"
+    billing_mode   = "PROVISIONED"
+    read_capacity  = 5
+    write_capacity = 5
+    hash_key       = "id"
+    attribute      = [{ name = "id", type = "S" }]
   }
 }

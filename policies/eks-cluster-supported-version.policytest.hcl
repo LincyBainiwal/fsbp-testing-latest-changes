@@ -57,8 +57,6 @@ resource "aws_eks_cluster" "fail_version_just_below_min" {
 }
 
 # Test 5: FAIL - EKS cluster with no version specified.
-# The old policy defaulted to "1.33" and passed this silently.
-# The fixed policy defaults to "" and fails it.
 resource "aws_eks_cluster" "fail_no_version" {
     expect_failure = true
     attrs = {
