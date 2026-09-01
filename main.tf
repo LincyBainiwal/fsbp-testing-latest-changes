@@ -61,39 +61,39 @@ terraform {
 # IAM — EC2 instance profile (inline; no separate IAM module needed)
 # ---------------------------------------------------------------------------
 
-# data "aws_iam_policy_document" "ec2_assume_role" {
-#   statement {
-#     effect  = "Allow"
-#     actions = ["sts:AssumeRole"]
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ec2.amazonaws.com"]
-#     }
-#   }
-# }
+data "aws_iam_policy_document" "ec2_assume_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
 
-# resource "aws_iam_role" "ec2_instance_role" {
-#   name               = "regression-test-ec2-instance-role"
-#   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
+resource "aws_iam_role" "ec2_instance_role" {
+  name               = "regression-test-ec2-instance-role"
+  assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 
-#   tags = merge(var.tags, {
-#     Name = "regression-test-ec2-instance-role"
-#   })
-# }
+  tags = merge(var.tags, {
+    Name = "regression-test-ec2-instance-role"
+  })
+}
 
-# resource "aws_iam_role_policy_attachment" "ec2_ssm" {
-#   role       = aws_iam_role.ec2_instance_role.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-# }
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
 
-# resource "aws_iam_instance_profile" "ec2" {
-#   name = "regression-test-ec2-instance-profile"
-#   role = aws_iam_role.ec2_instance_role.name
+resource "aws_iam_instance_profile" "ec2" {
+  name = "regression-test-ec2-instance-profile"
+  role = aws_iam_role.ec2_instance_role.name
 
-#   tags = merge(var.tags, {
-#     Name = "regression-test-ec2-instance-profile"
-#   })
-# }
+  tags = merge(var.tags, {
+    Name = "regression-test-ec2-instance-profile"
+  })
+}
 
 # ---------------------------------------------------------------------------
 # KMS — shared CMK (required by IAM + Lambda)
@@ -320,7 +320,7 @@ module "ec2" {
   private_subnet_ids       = aws_subnet.private[*].id
   public_subnet_ids        = aws_subnet.public[*].id
   availability_zones       = var.availability_zones
-  instance_profile_name    = module.iam.ec2_instance_profile_name
+  instance_profile_name    = aws_iam_instance_profile.ec2.name
   kms_key_arn              = module.kms.shared_key_arn
 }
 
