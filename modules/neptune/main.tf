@@ -89,7 +89,7 @@ resource "aws_neptune_cluster" "pass" {
 
   storage_encrypted = true
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 7
   preferred_backup_window = "03:00-04:00"
@@ -139,7 +139,7 @@ resource "aws_neptune_cluster" "encrypted_fail" {
 
   storage_encrypted = false # intentional violation
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 7
   preferred_backup_window = "03:00-04:00"
@@ -180,7 +180,7 @@ resource "aws_neptune_cluster" "audit_fail" {
 
   storage_encrypted = true
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 7
   preferred_backup_window = "03:00-04:00"
@@ -262,7 +262,7 @@ resource "aws_neptune_cluster" "backup_fail" {
 
   storage_encrypted = true
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 1 # intentional violation
   preferred_backup_window = "03:00-04:00"
@@ -303,7 +303,7 @@ resource "aws_neptune_cluster" "auth_fail" {
 
   storage_encrypted = true
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 7
   preferred_backup_window = "03:00-04:00"
@@ -344,7 +344,7 @@ resource "aws_neptune_cluster" "tags_fail" {
 
   storage_encrypted = true
 
-  deletion_protection = true
+  deletion_protection = false
 
   backup_retention_period = 7
   preferred_backup_window = "03:00-04:00"
