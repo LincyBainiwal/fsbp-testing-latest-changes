@@ -311,6 +311,51 @@ resource "aws_subnet" "public" {
 #   rds_monitoring_role_arn  = module.iam.rds_monitoring_role_arn
 # }
 
+# ---------------------------------------------------------------------------
+# IAM — active (provides rds_monitoring_role_arn,
+#        cloudtrail_cloudwatch_role_arn, eks roles)
+# ---------------------------------------------------------------------------
+
+module "iam" {
+  source = "./modules/iam"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
+
+# ---------------------------------------------------------------------------
+# EKS — active
+# ---------------------------------------------------------------------------
+
+module "eks" {
+  source = "./modules/eks"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  availability_zones       = var.availability_zones
+  kms_key_arn              = module.kms.shared_key_arn
+  eks_cluster_role_arn     = module.iam.eks_cluster_role_arn
+  eks_node_role_arn        = module.iam.eks_node_role_arn
+}
+
+# ---------------------------------------------------------------------------
+# RDS — active
+# ---------------------------------------------------------------------------
+
+module "rds" {
+  source = "./modules/rds"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  availability_zones       = var.availability_zones
+  kms_key_arn              = module.kms.shared_key_arn
+  rds_monitoring_role_arn  = module.iam.rds_monitoring_role_arn
+}
+
 module "ec2" {
   source = "./modules/ec2"
 
@@ -362,6 +407,47 @@ module "ec2" {
 #   private_subnet_ids       = aws_subnet.private[*].id
 #   logs_bucket_id           = module.s3.logs_bucket_id
 # }
+
+# ---------------------------------------------------------------------------
+# S3 — active (provides logs_bucket_id/arn for CloudTrail + ELB)
+# ---------------------------------------------------------------------------
+
+module "s3" {
+  source = "./modules/s3"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+}
+
+# ---------------------------------------------------------------------------
+# CloudTrail — active
+# ---------------------------------------------------------------------------
+
+module "cloudtrail" {
+  source = "./modules/cloudtrail"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  kms_key_arn              = module.kms.shared_key_arn
+  log_bucket_id            = module.s3.logs_bucket_id
+  log_bucket_arn           = module.s3.logs_bucket_arn
+  cloudwatch_role_arn      = module.iam.cloudtrail_cloudwatch_role_arn
+}
+
+# ---------------------------------------------------------------------------
+# ELB — active
+# ---------------------------------------------------------------------------
+
+module "elb" {
+  source = "./modules/elb"
+
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  public_subnet_ids        = aws_subnet.public[*].id
+  private_subnet_ids       = aws_subnet.private[*].id
+  logs_bucket_id           = module.s3.logs_bucket_id
+}
 
 # module "waf" {
 #   source = "./modules/waf"
