@@ -61,7 +61,7 @@ resource "aws_instance" "app_pass" {
 
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 20
+    volume_size           = 30
     encrypted             = true
     kms_key_id            = var.kms_key_arn
     delete_on_termination = true
@@ -92,7 +92,7 @@ resource "aws_instance" "app_fail" {
 
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 20
+    volume_size           = 30
     encrypted             = true
     kms_key_id            = var.kms_key_arn
     delete_on_termination = true
@@ -127,7 +127,7 @@ resource "aws_instance" "private_pass" {
 
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 20
+    volume_size           = 30
     encrypted             = true
     kms_key_id            = var.kms_key_arn
     delete_on_termination = true
@@ -159,7 +159,7 @@ resource "aws_instance" "public_fail" {
 
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 20
+    volume_size           = 30
     encrypted             = true
     kms_key_id            = var.kms_key_arn
     delete_on_termination = true
@@ -528,7 +528,7 @@ resource "aws_flow_log" "pass" {
 # pass: no public IP, http_tokens = "required"
 resource "aws_launch_template" "pass" {
   name          = "ec2-lt-pass"
-  description   = "Production launch template — no public IP, IMDSv2 required"
+  description   = "Production launch template - no public IP, IMDSv2 required"
   image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = "t3.medium"
 
@@ -552,7 +552,7 @@ resource "aws_launch_template" "pass" {
     device_name = "/dev/xvda"
     ebs {
       volume_type           = "gp3"
-      volume_size           = 20
+      volume_size           = 30
       encrypted             = true
       kms_key_id            = var.kms_key_arn
       delete_on_termination = true
@@ -581,7 +581,7 @@ resource "aws_launch_template" "fail" {
   count = var.create_failing_resources ? 1 : 0
 
   name          = "ec2-lt-fail"
-  description   = "Launch template with public IP and IMDSv1 — intentional violation"
+  description   = "Launch template with public IP and IMDSv1 - intentional violation"
   image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = "t3.medium"
 
@@ -605,7 +605,7 @@ resource "aws_launch_template" "fail" {
     device_name = "/dev/xvda"
     ebs {
       volume_type           = "gp3"
-      volume_size           = 20
+      volume_size           = 30
       encrypted             = true
       kms_key_id            = var.kms_key_arn
       delete_on_termination = true
@@ -636,7 +636,7 @@ resource "aws_launch_template" "fail" {
 
 # pass: auto_accept_shared_attachments = "disable"
 resource "aws_ec2_transit_gateway" "pass" {
-  description                     = "Production transit gateway — auto-accept disabled"
+  description                     = "Production transit gateway - auto-accept disabled"
   default_route_table_association = "disable"
   default_route_table_propagation = "disable"
   auto_accept_shared_attachments  = "disable"
@@ -653,7 +653,7 @@ resource "aws_ec2_transit_gateway" "pass" {
 resource "aws_ec2_transit_gateway" "fail" {
   count = var.create_failing_resources ? 1 : 0
 
-  description                     = "Transit gateway with auto-accept enabled — intentional violation"
+  description                     = "Transit gateway with auto-accept enabled - intentional violation"
   default_route_table_association = "disable"
   default_route_table_propagation = "disable"
   auto_accept_shared_attachments  = "enable"

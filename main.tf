@@ -311,18 +311,18 @@ resource "aws_subnet" "public" {
 #   rds_monitoring_role_arn  = module.iam.rds_monitoring_role_arn
 # }
 
-# module "ec2" {
-#   source = "./modules/ec2"
+module "ec2" {
+  source = "./modules/ec2"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   public_subnet_ids        = aws_subnet.public[*].id
-#   availability_zones       = var.availability_zones
-#   instance_profile_name    = module.iam.ec2_instance_profile_name
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  public_subnet_ids        = aws_subnet.public[*].id
+  availability_zones       = var.availability_zones
+  instance_profile_name    = module.iam.ec2_instance_profile_name
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
 # ---------------------------------------------------------------------------
 # CloudTrail
@@ -491,71 +491,71 @@ resource "aws_subnet" "public" {
 #   logs_bucket_arn          = module.s3.logs_bucket_arn
 # }
 
-module "opensearch" {
-  source = "./modules/opensearch"
+# module "opensearch" {
+#   source = "./modules/opensearch"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
-module "elasticsearch" {
-  source = "./modules/elasticsearch"
+# module "elasticsearch" {
+#   source = "./modules/elasticsearch"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
-module "msk" {
-  source = "./modules/msk"
+# module "msk" {
+#   source = "./modules/msk"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
-module "neptune" {
-  source = "./modules/neptune"
+# module "neptune" {
+#   source = "./modules/neptune"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
-module "docdb" {
-  source = "./modules/docdb"
+# module "docdb" {
+#   source = "./modules/docdb"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
-module "elasticache" {
-  source = "./modules/elasticache"
+# module "elasticache" {
+#   source = "./modules/elasticache"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  private_subnet_cidrs     = var.private_subnet_cidrs
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   private_subnet_cidrs     = var.private_subnet_cidrs
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
 
 # # ---------------------------------------------------------------------------
 # # Messaging + secrets
@@ -589,14 +589,14 @@ module "elasticache" {
 # # Developer / analytics services
 # # ---------------------------------------------------------------------------
 
-module "athena" {
-  source = "./modules/athena"
+# module "athena" {
+#   source = "./modules/athena"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  kms_key_arn              = module.kms.shared_key_arn
-  logs_bucket_id           = module.s3.logs_bucket_id
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   kms_key_arn              = module.kms.shared_key_arn
+#   logs_bucket_id           = module.s3.logs_bucket_id
+# }
 
 # module "codebuild" {
 #   source = "./modules/codebuild"
