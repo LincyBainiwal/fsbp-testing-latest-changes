@@ -47,7 +47,7 @@ resource "aws_ebs_encryption_by_default" "this" {
 # pass: http_tokens = "required"
 resource "aws_instance" "app_pass" {
   ami                    = data.aws_ami.amazon_linux_2023.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.micro"
   subnet_id              = var.private_subnet_ids[0]
   iam_instance_profile   = var.instance_profile_name
   monitoring             = true
@@ -78,7 +78,7 @@ resource "aws_instance" "app_fail" {
   count = var.create_failing_resources ? 1 : 0
 
   ami                    = data.aws_ami.amazon_linux_2023.id
-  instance_type          = "t2.micro"
+  instance_type          = "t3.micro"
   subnet_id              = var.private_subnet_ids[0]
   iam_instance_profile   = var.instance_profile_name
   monitoring             = true
@@ -112,7 +112,7 @@ resource "aws_instance" "app_fail" {
 # pass: associate_public_ip_address = false
 resource "aws_instance" "private_pass" {
   ami                         = data.aws_ami.amazon_linux_2023.id
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   subnet_id                   = var.private_subnet_ids[0]
   associate_public_ip_address = false
   iam_instance_profile        = var.instance_profile_name
@@ -144,7 +144,7 @@ resource "aws_instance" "public_fail" {
   count = var.create_failing_resources ? 1 : 0
 
   ami                         = data.aws_ami.amazon_linux_2023.id
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   subnet_id                   = var.public_subnet_ids[0]
   associate_public_ip_address = true
   iam_instance_profile        = var.instance_profile_name
@@ -530,7 +530,7 @@ resource "aws_launch_template" "pass" {
   name          = "ec2-lt-pass"
   description   = "Production launch template - no public IP, IMDSv2 required"
   image_id      = data.aws_ami.amazon_linux_2023.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 
   iam_instance_profile {
     name = var.instance_profile_name
@@ -583,7 +583,7 @@ resource "aws_launch_template" "fail" {
   name          = "ec2-lt-fail"
   description   = "Launch template with public IP and IMDSv1 - intentional violation"
   image_id      = data.aws_ami.amazon_linux_2023.id
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
 
   iam_instance_profile {
     name = var.instance_profile_name
