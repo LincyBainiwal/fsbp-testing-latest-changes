@@ -589,14 +589,14 @@ module "elasticache" {
 # # Developer / analytics services
 # # ---------------------------------------------------------------------------
 
-# module "athena" {
-#   source = "./modules/athena"
+module "athena" {
+  source = "./modules/athena"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   kms_key_arn              = module.kms.shared_key_arn
-#   logs_bucket_id           = module.s3.logs_bucket_id
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  kms_key_arn              = module.kms.shared_key_arn
+  logs_bucket_id           = module.s3.logs_bucket_id
+}
 
 # module "codebuild" {
 #   source = "./modules/codebuild"

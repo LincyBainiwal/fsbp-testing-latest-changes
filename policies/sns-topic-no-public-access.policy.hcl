@@ -51,7 +51,11 @@ resource_policy "aws_sns_topic_policy" "no_public_access" {
         !(
           core::try(stmt.Condition, null) != null && (
             core::try(stmt.Condition.StringEquals["aws:PrincipalOrgID"], null) != null ||
+            core::try(stmt.Condition.StringLike["aws:PrincipalOrgID"], null) != null ||
             core::try(stmt.Condition.StringEquals["aws:SourceAccount"], null) != null ||
+            core::try(stmt.Condition.StringEquals["aws:SourceArn"], null) != null ||
+            core::try(stmt.Condition.ArnLike["aws:SourceArn"], null) != null ||
+            core::try(stmt.Condition.StringEquals["aws:SourceOrgID"], null) != null ||
             core::try(stmt.Condition.StringLike["aws:SourceVpce"], null) != null
           )
         )
@@ -69,7 +73,11 @@ resource_policy "aws_sns_topic_policy" "no_public_access" {
     ) && !(
       core::try(local.raw_statements.Condition, null) != null && (
         core::try(local.raw_statements.Condition.StringEquals["aws:PrincipalOrgID"], null) != null ||
+        core::try(local.raw_statements.Condition.StringLike["aws:PrincipalOrgID"], null) != null ||
         core::try(local.raw_statements.Condition.StringEquals["aws:SourceAccount"], null) != null ||
+        core::try(local.raw_statements.Condition.StringEquals["aws:SourceArn"], null) != null ||
+        core::try(local.raw_statements.Condition.ArnLike["aws:SourceArn"], null) != null ||
+        core::try(local.raw_statements.Condition.StringEquals["aws:SourceOrgID"], null) != null ||
         core::try(local.raw_statements.Condition.StringLike["aws:SourceVpce"], null) != null
       )
     )
@@ -116,7 +124,11 @@ resource_policy "aws_sns_topic" "no_public_access_inline" {
         !(
           core::try(stmt.Condition, null) != null && (
             core::try(stmt.Condition.StringEquals["aws:PrincipalOrgID"], null) != null ||
+            core::try(stmt.Condition.StringLike["aws:PrincipalOrgID"], null) != null ||
             core::try(stmt.Condition.StringEquals["aws:SourceAccount"], null) != null ||
+            core::try(stmt.Condition.StringEquals["aws:SourceArn"], null) != null ||
+            core::try(stmt.Condition.ArnLike["aws:SourceArn"], null) != null ||
+            core::try(stmt.Condition.StringEquals["aws:SourceOrgID"], null) != null ||
             core::try(stmt.Condition.StringLike["aws:SourceVpce"], null) != null
           )
         )
@@ -133,7 +145,11 @@ resource_policy "aws_sns_topic" "no_public_access_inline" {
     ) && !(
       core::try(local.raw_statements.Condition, null) != null && (
         core::try(local.raw_statements.Condition.StringEquals["aws:PrincipalOrgID"], null) != null ||
+        core::try(local.raw_statements.Condition.StringLike["aws:PrincipalOrgID"], null) != null ||
         core::try(local.raw_statements.Condition.StringEquals["aws:SourceAccount"], null) != null ||
+        core::try(local.raw_statements.Condition.StringEquals["aws:SourceArn"], null) != null ||
+        core::try(local.raw_statements.Condition.ArnLike["aws:SourceArn"], null) != null ||
+        core::try(local.raw_statements.Condition.StringEquals["aws:SourceOrgID"], null) != null ||
         core::try(local.raw_statements.Condition.StringLike["aws:SourceVpce"], null) != null
       )
     )

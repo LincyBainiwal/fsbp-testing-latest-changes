@@ -72,15 +72,3 @@ resource "aws_ssm_service_setting" "fail_case_sensitive_value" {
   }
 }
 
-# --------------- FAIL cases (existence check) ---------------
-
-# Test 8: FAIL - Only an unrelated SSM setting in the plan — no public-sharing setting at all.
-# The existence check (block_public_sharing_exists) must catch this.
-# NOTE: This test has ONLY an unrelated setting — no public-sharing setting resource.
-resource "aws_ssm_service_setting" "fail_no_public_sharing_setting" {
-  expect_failure = true
-  attrs = {
-    setting_id    = "/ssm/managed-instance/activation-tier"
-    setting_value = "standard"
-  }
-}

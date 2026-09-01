@@ -159,3 +159,35 @@ resource "aws_sns_topic_policy" "pass_wildcard_source_vpce_condition" {
     policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"SNS:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:123456789012:my-topic\",\"Condition\":{\"StringLike\":{\"aws:SourceVpce\":\"vpce-*\"}}}]}"
   }
 }
+
+# Test 15: PASS - aws:SourceArn (StringEquals) — EventBridge/CloudWatch pattern
+resource "aws_sns_topic_policy" "pass_source_arn_string_equals" {
+  attrs = {
+    arn = "arn:aws:sns:us-east-1:123456789012:my-topic"
+    policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"SNS:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:123456789012:my-topic\",\"Condition\":{\"StringEquals\":{\"aws:SourceArn\":\"arn:aws:events:us-east-1:123456789012:rule/my-rule\"}}}]}"
+  }
+}
+
+# Test 16: PASS - aws:SourceArn (ArnLike) — common CloudWatch Alarms pattern
+resource "aws_sns_topic_policy" "pass_source_arn_arnlike" {
+  attrs = {
+    arn = "arn:aws:sns:us-east-1:123456789012:my-topic"
+    policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"SNS:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:123456789012:my-topic\",\"Condition\":{\"ArnLike\":{\"aws:SourceArn\":\"arn:aws:cloudwatch:us-east-1:123456789012:alarm:*\"}}}]}"
+  }
+}
+
+# Test 17: PASS - aws:SourceOrgID (StringEquals)
+resource "aws_sns_topic_policy" "pass_source_org_id" {
+  attrs = {
+    arn = "arn:aws:sns:us-east-1:123456789012:my-topic"
+    policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"SNS:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:123456789012:my-topic\",\"Condition\":{\"StringEquals\":{\"aws:SourceOrgID\":\"o-exampleorgid\"}}}]}"
+  }
+}
+
+# Test 18: PASS - aws:PrincipalOrgID under StringLike (org ID glob pattern)
+resource "aws_sns_topic_policy" "pass_principal_org_id_stringlike" {
+  attrs = {
+    arn = "arn:aws:sns:us-east-1:123456789012:my-topic"
+    policy = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"SNS:Publish\",\"Resource\":\"arn:aws:sns:us-east-1:123456789012:my-topic\",\"Condition\":{\"StringLike\":{\"aws:PrincipalOrgID\":\"o-*\"}}}]}"
+  }
+}
