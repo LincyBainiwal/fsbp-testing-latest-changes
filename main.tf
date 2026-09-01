@@ -491,71 +491,71 @@ resource "aws_subnet" "public" {
 #   logs_bucket_arn          = module.s3.logs_bucket_arn
 # }
 
-# module "opensearch" {
-#   source = "./modules/opensearch"
+module "opensearch" {
+  source = "./modules/opensearch"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
-# module "elasticsearch" {
-#   source = "./modules/elasticsearch"
+module "elasticsearch" {
+  source = "./modules/elasticsearch"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
-# module "msk" {
-#   source = "./modules/msk"
+module "msk" {
+  source = "./modules/msk"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
-# module "neptune" {
-#   source = "./modules/neptune"
+module "neptune" {
+  source = "./modules/neptune"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
-# module "docdb" {
-#   source = "./modules/docdb"
+module "docdb" {
+  source = "./modules/docdb"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
-# module "elasticache" {
-#   source = "./modules/elasticache"
+module "elasticache" {
+  source = "./modules/elasticache"
 
-#   create_failing_resources = var.create_failing_resources
-#   tags                     = var.tags
-#   vpc_id                   = aws_vpc.main.id
-#   private_subnet_ids       = aws_subnet.private[*].id
-#   private_subnet_cidrs     = var.private_subnet_cidrs
-#   kms_key_arn              = module.kms.shared_key_arn
-# }
+  create_failing_resources = var.create_failing_resources
+  tags                     = var.tags
+  vpc_id                   = aws_vpc.main.id
+  private_subnet_ids       = aws_subnet.private[*].id
+  private_subnet_cidrs     = var.private_subnet_cidrs
+  kms_key_arn              = module.kms.shared_key_arn
+}
 
 # # ---------------------------------------------------------------------------
 # # Messaging + secrets
@@ -797,45 +797,45 @@ resource "aws_subnet" "public" {
 # # Specialist / global services
 # # ---------------------------------------------------------------------------
 
-module "acm" {
-  source = "./modules/acm"
+# module "acm" {
+#   source = "./modules/acm"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
-module "route53" {
-  source = "./modules/route53"
+# module "route53" {
+#   source = "./modules/route53"
 
-  providers = {
-    aws           = aws
-    aws.us_east_1 = aws.us_east_1
-  }
+#   providers = {
+#     aws           = aws
+#     aws.us_east_1 = aws.us_east_1
+#   }
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
-module "ssm" {
-  source = "./modules/ssm"
+# module "ssm" {
+#   source = "./modules/ssm"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
-module "servicecatalog" {
-  source = "./modules/servicecatalog"
+# module "servicecatalog" {
+#   source = "./modules/servicecatalog"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+# }
 
-module "workspaces" {
-  source = "./modules/workspaces"
+# module "workspaces" {
+#   source = "./modules/workspaces"
 
-  create_failing_resources = var.create_failing_resources
-  tags                     = var.tags
-  vpc_id                   = aws_vpc.main.id
-  private_subnet_ids       = aws_subnet.private[*].id
-  kms_key_arn              = module.kms.shared_key_arn
-}
+#   create_failing_resources = var.create_failing_resources
+#   tags                     = var.tags
+#   vpc_id                   = aws_vpc.main.id
+#   private_subnet_ids       = aws_subnet.private[*].id
+#   kms_key_arn              = module.kms.shared_key_arn
+# }
